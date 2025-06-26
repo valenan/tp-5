@@ -6,49 +6,50 @@ struct tnodo{
     punt sig;
 };
 void menu(int &n);
-void crear_lista(punt &lista);
-bool es_vacia(punt lista);
+void crear_lista(punt &lista,punt &cola);
+bool es_vacia(punt lista,punt cola);
 void nuevo_nodo(punt &nuevo);
-void agregar_inicio (punt &lista, punt nuevo);
-void agregar_ordenado(punt &lista, punt nuevo);
-void agregar_final(punt &lista,punt nuevo);
-bool buscar(punt lista, int dato);
+void agregar_inicio (punt &lista, punt nuevo,punt &cola);
+void agregar_ordenado(punt &lista, punt nuevo, punt &cola);
+void agregar_final(punt &lista,punt nuevo, punt cola);
+bool buscar(punt lista, int dato, punt cola);
+//Los eliminar no liberan memoria, ya que se devolverá el nodo eliminado para que el usuario lo libere.
 punt eliminar_inicio(punt &lista);
-punt eliminar_final(punt &lista);
-punt eliminar_nodo(punt &lista, int dato);
-void mostrar_lista(punt lista);
-int minimo(punt lista);
+punt eliminar_final(punt &lista, punt &cola);
+punt eliminar_nodo(punt &lista, int dato, punt &cola);
+void mostrar_lista(punt lista, punt cola);
+int minimo(punt lista, punt cola);
 int main(){
-punt lista,nuevo;
+punt lista,nuevo,cola;// Puntero para la cola de la lista
 int opcion, dato,min;
 cout<<"Bienvenido al programa de manejo de listas enlazadas simples"<<endl;
 cout<<"Para empezar, cree una lista vacía."<<endl;
-crear_lista(lista);
+crear_lista(lista,cola);
 do{
     menu(opcion);
 switch(opcion)
 {
 case 1:
     
-    crear_lista(lista);
+    crear_lista(lista,cola);
     cout<<"Lista creada."<<endl;
     break;
 case 2:
     nuevo_nodo(nuevo);
-    agregar_inicio(lista, nuevo);
+    agregar_inicio(lista, nuevo,cola);
 break;
 case 3:
     nuevo_nodo(nuevo);
-    agregar_ordenado(lista, nuevo);
+    agregar_ordenado(lista, nuevo, cola);
     break;
 case 4:
     nuevo_nodo(nuevo);
-    agregar_final(lista, nuevo);
+    agregar_final(lista, nuevo, cola);
     break;  
 case 5:
     cout<<"Ingrese el dato a buscar: "; 
     cin>>dato;
-    if(buscar(lista, dato)){
+    if(buscar(lista, dato, cola)){
         cout<<"El dato "<<dato<<" se encuentra en la lista."<<endl;
     }
     else{
@@ -67,7 +68,7 @@ case 6:
     }
     break;
 case 7:
-    nuevo = eliminar_final(lista);
+    nuevo = eliminar_final(lista, cola);
     if(nuevo != NULL){
         cout<<"Nodo eliminado al final con dato: "<<nuevo->dato<<endl;
         delete nuevo; // Liberar memoria
@@ -79,7 +80,7 @@ case 7:
 case 8:
     cout<<"Ingrese el dato a eliminar: ";
     cin>>dato;
-    nuevo = eliminar_nodo(lista, dato);
+    nuevo = eliminar_nodo(lista, dato, cola);
     if(nuevo != NULL){
         cout<<"Nodo eliminado con dato: "<<nuevo->dato<<endl;
         delete nuevo; // Liberar memoria
@@ -91,16 +92,16 @@ case 8:
 case 9:
     cout<<"Mostrando lista: ";
 
-    mostrar_lista(lista);
+    mostrar_lista(lista, cola);
     break;
 case 10:
-    min = minimo(lista);
+    min = minimo(lista, cola);
     if (min != -999) {
         cout << "El valor mínimo en la lista es: " << min << endl;
     }
     break;
 case 11:
-    if(es_vacia(lista)){
+    if(es_vacia(lista, cola)){
         cout<<"La lista está vacía."<<endl;
     }
     else{
@@ -119,12 +120,16 @@ default:
 
     return 0;
 };
+//################################################################################################
 
-void crear_lista(punt &lista){
+
+//################################################################################################
+void crear_lista(punt &lista, punt &cola){
     lista = NULL;
+    cola=NULL;
 };
-bool es_vacia(punt lista){
-    return lista == NULL;
+bool es_vacia(punt lista, punt cola){
+    return lista == NULL&& cola == NULL;
 };
 void nuevo_nodo(punt &nuevo){
    nuevo = new tnodo;
@@ -137,40 +142,49 @@ void nuevo_nodo(punt &nuevo){
     cout<<"Memoria insuficiente"<<endl;
    }
 };
-void agregar_inicio(punt &lista,punt nuevo){
-    nuevo -> sig = lista;
+void agregar_inicio(punt &lista, punt nuevo, punt &cola){
+    if (lista == NULL) // Si la lista estaba vacía antes de insertar
+        cola = nuevo;
+    nuevo->sig = lista;
     lista = nuevo;
-};
-void agregar_ordenado(punt &lista, punt nuevo){
+}
+void agregar_ordenado(punt &lista, punt nuevo, punt &cola){
     punt i;
-    if(lista==NULL)
-        lista=nuevo;
+    if(es_vacia(lista,cola))// Si la lista está vacía, el nuevo nodo se convierte en el primer nodo
+        {lista=nuevo;
+        cola=nuevo; // Si la lista estaba vacía, el nuevo nodo también es la cola
+        }
+        
     else{
         if(nuevo->dato<lista->dato){
             nuevo->sig=lista;
             lista=nuevo;
         }
         else{
-            for(i=lista;i->sig!=NULL && nuevo->dato>(i->sig)->dato;i=i->sig){
-                nuevo->sig = i->sig;
-            i->sig = nuevo;
+            i = lista;
+            while(i->sig != NULL && i->sig->dato < nuevo->dato) {
+                i = i->sig; // Buscar la posición correcta para insertar el nuevo nodo
+            }
+            nuevo->sig = i->sig; // El nuevo nodo apunta al siguiente nodo
+            i->sig = nuevo; // El nodo anterior apunta al nuevo nodo
+            if (nuevo->sig == NULL) { // Si el nuevo nodo es el último,
+                cola = nuevo; // Actualizar la cola
             }
             };
 
         }
     };
-void agregar_final(punt &lista,punt nuevo){
-if (es_vacia(lista)) {
+void agregar_final(punt &lista,punt nuevo,punt cola){
+if (es_vacia(lista,cola)) {
         lista = nuevo;
+        cola=nuevo;
     } else {
-        punt i = lista;
-        while (i->sig != NULL) {
-            i = i->sig;
-        }
-        i->sig = nuevo;
+    cola->sig = nuevo; // El nodo anterior apunta al nuevo nodo
+    nuevo->sig = NULL; // El nuevo nodo es el último, por lo que su siguiente es NULL
+    cola = nuevo; // Actualizar la cola para que apunte al nuevo nodo
     };
 };
-bool buscar(punt lista, int dato){
+bool buscar(punt lista, int dato,punt cola){
     punt i = lista;
     while (i != NULL) {
         if (i->dato == dato) {
@@ -180,9 +194,9 @@ bool buscar(punt lista, int dato){
     }
     return false;
 };
-punt eliminar_inicio(punt &lista){
+punt eliminar_inicio(punt &lista,punt cola){
     punt borrado;
-if(es_vacia(lista))
+if(es_vacia(lista,cola))
     borrado = NULL;
 else{
     borrado = lista;
@@ -191,7 +205,7 @@ else{
 };
 return borrado;
 };
-punt eliminar_final(punt &lista){
+punt eliminar_final(punt &lista,punt &cola){
     punt borrado, i;
     if (lista == NULL)
         borrado = NULL;
@@ -199,19 +213,21 @@ punt eliminar_final(punt &lista){
         if (lista->sig==NULL){
             borrado=lista;
             lista = NULL;
+            cola = NULL; // Si se elimina el único nodo, la cola también se actualiza
         }
         else{
             for (i=lista;(i->sig)->sig!=NULL;i=i->sig){
                 borrado =i->sig;
                 i->sig = NULL;
+                cola = i; // Actualizar la cola para que apunte al nuevo último nodo
             }
         }
     }
     return borrado;
 };
-punt eliminar_nodo(punt &lista, int dato){
+punt eliminar_nodo(punt &lista, int dato, punt &cola){
     punt borrado;
-    if(es_vacia(lista)) {
+    if(es_vacia(lista,cola)) {
         borrado=nullptr; // Lista vacía, no se puede eliminar
     }
     else{
@@ -227,6 +243,9 @@ punt eliminar_nodo(punt &lista, int dato){
             borrado = i->sig;
             i->sig = borrado->sig;
             borrado->sig = NULL;
+            if (i->sig == NULL) { // Si se eliminó el último nodo, actualizar la cola
+                cola = i;
+            }
         }
         else {
             borrado = NULL; // No se encontró el nodo a eliminar
@@ -237,22 +256,21 @@ punt eliminar_nodo(punt &lista, int dato){
         };
         return borrado;
 };
-void mostrar_lista(punt lista){
+void mostrar_lista(punt lista, punt cola){
     punt i = lista;
-    if(es_vacia(lista)){
+    if(es_vacia(lista,cola)){
         cout<<"Lista vacia"<<endl;
     }
     else{
-        while(i!=NULL){
-            cout<<i->dato<<" ";
-            i=i->sig;
+        for(; i != NULL; i = i->sig) {
+            cout << i->dato << " ";
         }
         cout<<endl;
     }
 };
-int minimo(punt lista){
+int minimo(punt lista, punt cola){
     int min=-999;
-    if(es_vacia(lista)) {
+    if(es_vacia(lista,cola)) {
         cout << "Lista vacía, no se puede encontrar el mínimo." << endl;
     }
 else{
