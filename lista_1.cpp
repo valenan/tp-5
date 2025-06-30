@@ -14,7 +14,7 @@ void agregar_ordenado(punt &lista, punt nuevo, punt &cola,int &contador);
 void agregar_final(punt &lista,punt nuevo, punt &cola,int &contador);
 bool buscar(punt lista, int dato, punt cola);
 //Los eliminar no liberan memoria, ya que se devolverá el nodo eliminado para que el usuario lo libere.
-punt eliminar_inicio(punt &lista,int &contador);
+punt eliminar_inicio(punt &lista,punt &cola,int &contador);
 punt eliminar_final(punt &lista, punt &cola, int &contador);
 punt eliminar_nodo(punt &lista, int dato, punt &cola, int &contador);
 void mostrar_lista(punt lista, punt cola);
@@ -62,7 +62,7 @@ case 5:
 
     break;
 case 6:
-    nuevo = eliminar_inicio(lista, contador); 
+    nuevo = eliminar_inicio(lista,cola, contador); 
     if(nuevo != NULL){
         cout<<"Nodo eliminado al inicio con dato: "<<nuevo->dato<<endl;
         delete nuevo; // Liberar memoria
@@ -223,7 +223,7 @@ bool buscar(punt lista, int dato,punt cola){
     }
     return false;
 };
-punt eliminar_inicio(punt &lista,punt cola,int &contador){
+punt eliminar_inicio(punt &lista,punt &cola,int &contador){
     punt borrado;
 if(es_vacia(lista,cola))
     borrado = NULL;
