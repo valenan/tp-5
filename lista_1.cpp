@@ -19,9 +19,13 @@ punt eliminar_final(punt &lista, punt &cola, int &contador);
 punt eliminar_nodo(punt &lista, int dato, punt &cola, int &contador);
 void mostrar_lista(punt lista, punt cola);
 int minimo(punt lista, punt cola);
+int buscar_indice(punt lista,punt cola, int dato);
+punt buscar_por_indice(punt lista, punt cola, int indice, int contador);
+
+
 int main(){
 punt lista,nuevo,cola;// Puntero para la cola de la lista
-int opcion, dato,min,contador=0;
+int opcion, dato,min,contador=-1;
 cout<<"Bienvenido al programa de manejo de listas enlazadas simples"<<endl;
 cout<<"Para empezar, cree una lista vacía."<<endl;
 crear_lista(lista,cola);
@@ -106,6 +110,28 @@ case 11:
     }
     else{
         cout<<"La lista no está vacía."<<endl;
+    }
+    break;
+case 12:
+    cout<<"Ingrese el dato a buscar su indice: ";
+    cin>>dato;
+    int indice = buscar_indice(lista, cola, dato);
+    if(indice != -1){
+        cout<<"El dato "<<dato<<" se encuentra en el indice: "<<indice<<endl;
+    }
+    else{
+        cout<<"El dato "<<dato<<" no se encuentra en la lista."<<endl;
+    }
+    break;
+case 13:
+    cout<<"Ingrese el indice a buscar: ";
+    cin>>dato;
+    punt encontrado = buscar_por_indice(lista, cola, dato,contador);
+    if(encontrado != NULL){
+        cout<<"El dato en el indice "<<dato<<" es: "<<encontrado->dato<<"Puntero: "<<encontrado<<endl;
+    }
+    else{
+        cout<<"No se encontró un nodo en el indice "<<dato<<endl;
     }
     break;
 case 0:
@@ -290,6 +316,44 @@ else{
 }
 return min;
 };
+int buscar_indice(punt lista, punt cola, int dato){
+    int i=-1,j=-1;
+    bool band=true;
+    punt aux=lista;
+    if(es_vacia(lista,cola))
+        return -1;
+    else{
+    while(band){
+        i++;
+        if(aux->dato==dato){
+            band=false;
+            j=i;
+        }
+        if(aux==cola)
+            band=false;
+        else
+            aux=aux->sig;
+    };
+
+}
+return j;};
+punt buscar_por_indice(punt lista, punt cola, int indice, int contador){
+    punt aux = lista;
+    int i = 0;
+    if(es_vacia(lista,cola)|| indice < 0 || indice >= contador) {
+        return NULL; // Lista vacía o índice fuera de rango
+    }
+    else{
+    while (aux != NULL) {
+        if(i== indice) {
+            return aux; // Retorna el nodo en el índice especificado
+        }
+        aux = aux->sig;
+        i++;
+    }
+    return NULL;
+    };
+};
 void menu (int &n){
     cout << "Menu de opciones:" << endl;
     cout << "1. Crear lista" << endl;
@@ -303,6 +367,8 @@ void menu (int &n){
     cout << "9. Mostrar lista" << endl;
     cout << "10. Encontrar mínimo" << endl;
     cout<<"11. Lista vacia?"<<endl;
+    cout<<"12. Buscar indice de un dato"<<endl;
+    cout << "13. Buscar segun indice " << endl;
     cout << "0. Salir" << endl;
     cin >> n;
 };
