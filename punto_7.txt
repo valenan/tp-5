@@ -1,0 +1,7 @@
+todas las funciones utilizan la recursividad para cumplir ciertos objetivos:
+
+enigma:mustra la lista en reversa.
+
+misterio: Cuenta los elementos en la lista
+
+desconocido: Retorna el ultimo nodo, si esta vacia retorna NULL.
