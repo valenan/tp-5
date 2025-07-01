@@ -32,27 +32,30 @@ void mostrar(punt lista){
         cout<<endl;
     }
 };
-int primos(punt lista);
+int mayus(punt lista);
+int minusc(punt lista);
 
 int main(){
-    punt lista;
-    int n=999,i;
+    punt lista,nuevo;
+    char dato,c;
+    int may,min;
     crear_lista(lista);
     do{
-        if(n!=999){
-            punt nuevo=crear_nodo(n);
-            push(lista, nuevo);
+        cout<<"Ingrese un caracter (/ para terminar): ";
+        cin>>dato;
+        if(dato!='/'){
+            nuevo=crear_nodo(dato);
+            push(lista,nuevo);
         }
-        cout << "Ingrese un numero entero a agregar a la lista (999 para terminar): ";
-        cin >> n;
-    }while(n!=999);
-i=primos(lista);
-    cout << "La cantidad de numeros primos en la lista es: " << i << endl;
-
-
+    }while(c!='/');
+    cout<<"Lista cargada: ";
+    mostrar(lista);
+may=mayus(lista);
+min=minusc(lista);
+cout<<"Se encontraron "<<may<<" mayusculas y "<<min<<" minusculas."<<endl;
     return 0;
 };
-punt crear_nodo(int valor){
+punt crear_nodo(char valor){
     punt nuevo=new tnodo;
     nuevo->dato=valor;
     nuevo->sig=NULL;
@@ -72,23 +75,30 @@ void push(punt &lista, punt nuevo){
         aux->sig=nuevo;
     }
 };
-int primos(punt lista){
-    int contador = 0;
-    punt aux = lista;
-    while (aux != NULL) {
-        int n = aux->dato;
-        if (n > 1) {
-            bool es_primo = true;
-            for (int i = 2; i * i <= n; i++) {
-                if (n % i == 0) {
-                    es_primo = false;
-                    break;
-                }
-            }
-            if (es_primo)
-                contador++;
+int mayus(punt lista){
+    if(vacia(lista)) {
+        return 0;
+    }
+    int contador=0;
+    punt aux=lista;
+    while(aux!=NULL){
+        if (aux->dato >= 'A' && aux->dato <= 'Z') {
+            contador++;
         }
         aux = aux->sig;
-    }
+    };
     return contador;
-}
+};
+int minusc(punt lista){
+    if (vacia(lista)) {
+        return 0;
+    }
+    int contador=0;
+    punt aux=lista;
+    while(aux!=NULL){
+        if (aux->dato >= 'a' && aux->dato <= 'z') {
+            contador++;
+        }
+        aux = aux->sig;
+    };  
+};
