@@ -119,6 +119,28 @@ void maxmin(tlista lista)
         cout << "Lista vacia" << endl;
     }
 }
+void mult3(tlista &lista){
+    pnodo aux= lista.inicio;
+    while(aux != NULL){
+        if(aux->dato % 3 == 0){
+            if(aux == lista.inicio){
+                QuitarInicio(lista);
+            }
+            else if(aux == lista.fin){
+                QuitarFinal(lista);
+            }
+            else{ 
+                aux->ant->sig = aux->sig;
+                aux->sig->ant = aux->ant;
+                delete aux;
+            }
+        }
+    }
+
+
+}
+
+
 
 int main(){
 
